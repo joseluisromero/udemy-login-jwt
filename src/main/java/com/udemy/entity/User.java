@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,8 +31,9 @@ public class User {
   private Long id;
 
   @Column(unique = true)
+  @NotBlank(message = "el username es requerido")
   private String username;
-
+  @NotBlank(message = "el password es requerido")
   private String password;
 
   @ManyToMany
