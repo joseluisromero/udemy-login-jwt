@@ -19,13 +19,34 @@ public class SpringSecurityConfig {
 
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    return http.authorizeHttpRequests((authz) -> authz
+    return   http
+        .authorizeHttpRequests(authz -> authz
             .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
-            .requestMatchers(HttpMethod.GET,"http://localhost:8080/h2-console/**").permitAll()
-            .anyRequest().authenticated())
-        .csrf.(config -> config.disable())
-        .sessionManagement(
-            management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+            .requestMatchers("/h2-console/**").permitAll() // Permite acceso a la consola H2
+            .anyRequest().authenticated()
+        )
+        .csrf(csrf -> csrf
+            .ignoringRequestMatchers("/h2-console/**") // Ignora CSRF para la consola H2
+            .disable()
+        )
+        .headers(headers -> headers
+            .frameOptions().sameOrigin() // Permite que la consola H2 se cargue en un iframe
+        )
+        .sessionManagement(management -> management
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        )
         .build();
+
   }
+  /*@Bean
+  SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http.authorizeHttpRequests( (authz) -> authz
+            .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+            .anyRequest().authenticated())
+        .csrf(config -> config.disable())
+        .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .build();
+  }*/
 }
