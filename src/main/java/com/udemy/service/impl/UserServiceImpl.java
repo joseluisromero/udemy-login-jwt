@@ -8,19 +8,20 @@ import com.udemy.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-  private final UserRepository userRepository;
-  private final RoleRepository roleRepository;
-
-  private final PasswordEncoder passwordEncoder;
+  @Autowired
+  private UserRepository userRepository;
+  @Autowired
+  private RoleRepository roleRepository;
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   @Override
   @Transactional(readOnly = true)
@@ -39,7 +40,15 @@ public class UserServiceImpl implements UserService {
       optionalRoleAdmin.ifPresent(role -> roles.add(role));
     }
     user.setRoles(roles);
+    user.setEnabled(true);
     user.setPassword(passwordEncoder.encode(user.getPassword()));
-    return userRepository.save(user);
+    //user.setId(1L);
+    user = userRepository.save(user);
+    return user;
+  }
+
+  @Override
+  public boolean findByUsername(String username) {
+    return userRepository.existsByUsername(username);
   }
 }

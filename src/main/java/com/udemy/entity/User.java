@@ -1,5 +1,8 @@
 package com.udemy.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.udemy.validation.ExistsByUsername;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,10 +35,14 @@ public class User {
 
   @Column(unique = true)
   @NotBlank(message = "el username es requerido")
+  //@ExistsByUsername
+
   private String username;
   @NotBlank(message = "el password es requerido")
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String password;
 
+  @JsonIgnoreProperties({"users", "handler", "hibernateLazyInitializer"})
   @ManyToMany
   @JoinTable(
       name = "users_roles",
@@ -44,6 +51,8 @@ public class User {
       uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "role_id"})}
   )
   private List<Role> roles;
+
+  private boolean enabled;
 
   @Transient
   private boolean admin;
