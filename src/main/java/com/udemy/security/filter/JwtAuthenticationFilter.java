@@ -1,6 +1,6 @@
 package com.udemy.security.filter;
 
-import static com.udemy.security.TokenJwtConfig.AUTHORIZATION;
+import static com.udemy.security.TokenJwtConfig.HEADER_AUTHORIZATION;
 import static com.udemy.security.TokenJwtConfig.CONTENT_TYPE;
 import static com.udemy.security.TokenJwtConfig.PREFIX_TOKEN;
 import static com.udemy.security.TokenJwtConfig.SECRET_KEY;
@@ -15,11 +15,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -64,7 +62,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
     String username = user.getUsername();
     Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
-    Claims claims = Jwts.claims().add("authorities", roles).build();
+    Claims claims = Jwts.claims().add("authorities", new ObjectMapper().writeValueAsString(roles))
+        .build();
     String token = Jwts.builder()
         .subject(username)
         .expiration(new Date(System.currentTimeMillis() + 3600000))
@@ -72,12 +71,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         .issuedAt(new Date())
         .signWith(SECRET_KEY)
         .compact();
-    response.addHeader(AUTHORIZATION, PREFIX_TOKEN + token);
+    response.addHeader(HEADER_AUTHORIZATION, PREFIX_TOKEN + token);
 
     Map<String, String> body = new HashMap<>();
     body.put("token", token);
     body.put("username", username);
-    body.put("message", String.format("Hola %s has iniciado session con éxito!",username));
+    body.put("message", String.format("Hola %s has iniciado session con éxito!", username));
     response.getWriter().write(new ObjectMapper().writeValueAsString(body));
     response.setContentType(CONTENT_TYPE);
     response.setStatus(200);

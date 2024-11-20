@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -32,10 +33,11 @@ public class UserController {
 
   @PostMapping("/register")
   public ResponseEntity<User> saveUsers(@Valid @RequestBody User user) {
-    log.info("objeto user: {}",user);
-    User user1=userService.save(user);
+    log.info("objeto user: {}", user);
+    User user1 = userService.save(user);
     return new ResponseEntity<>(user1, HttpStatus.CREATED);
   }
+
   private ResponseEntity<?> validation(BindingResult result) {
     Map<String, String> errors = new HashMap<>();
 

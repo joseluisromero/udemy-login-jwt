@@ -40,6 +40,7 @@ public class SpringSecurityConfig {
             .anyRequest().authenticated()
         )
         .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+        .addFilter(new JwtValidationFilter(authenticationManager()))
         .csrf(csrf -> csrf
             .ignoringRequestMatchers("/h2-console/**") // Ignora CSRF para la consola H2
             .disable()
