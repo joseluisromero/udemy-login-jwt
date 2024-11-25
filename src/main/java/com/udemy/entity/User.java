@@ -35,8 +35,7 @@ public class User {
 
   @Column(unique = true)
   @NotBlank(message = "el username es requerido")
-  //@ExistsByUsername
-
+  @ExistsByUsername
   private String username;
   @NotBlank(message = "el password es requerido")
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
